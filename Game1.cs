@@ -16,7 +16,6 @@ namespace Explore_Your_Smth
 {
     public class Game1 : Game
     {
-        Button wtf;
         #region Sound
 
         Song MainSong;
@@ -1138,16 +1137,13 @@ namespace Explore_Your_Smth
                     for (var y = 0; y < layer.height; y++)
                         for (var x = 0; x < layer.width; x++)
                         {
-                            var index = (y * layer.width) + x; // Assuming the default render order is used which is from right to bottom
-                            var gid = layer.data[index]; // The tileset tile index
+                            var index = (y * layer.width) + x;
+                            var gid = layer.data[index];
                             var tileX = x * map.TileWidth;
                             var tileY = y * map.TileHeight;
 
-                            // Gid 0 is used to tell there is no tile set
                             if (gid == 0) continue;
 
-                            // Helper method to fetch the right TieldMapTileset instance
-                            // This is a connection object Tiled uses for linking the correct tileset to the gid value using the firstgid property
                             var mapTileset = map.GetTiledMapTileset(gid);
 
                             var tileset = tilesets[mapTileset.firstgid];
@@ -1350,14 +1346,6 @@ namespace Explore_Your_Smth
 
             _spriteBatch.End();
             base.Draw(gameTime);
-            //if (debugRect != null)
-            //{
-            //    Texture2D _texture = new Texture2D(GraphicsDevice, 1, 1);
-            //    _texture.SetData(new Color[] { Color.Green });
-
-            //    _spriteBatch.Draw(_texture, (Rectangle)debugRect, Color.White);
-            //}
-            //Lumber.Draw(_spriteBatch);
 
         }
     }
