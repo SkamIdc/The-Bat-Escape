@@ -174,7 +174,6 @@ namespace Explore_Your_Smth
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             Window.AllowUserResizing = true;
-            //Window.IsBorderless = true;
             Window.Title = "The Bat Escape";
         }
 
@@ -375,7 +374,6 @@ namespace Explore_Your_Smth
 
             #endregion
 
-            //MenuButtons.Add(Scores);
 
             #region Choose start level 
 
@@ -547,13 +545,10 @@ namespace Explore_Your_Smth
 
         private void ContinueButton_Action(object sender, System.EventArgs e)
         {
-
             AttackSpeed = AttackSpeed_Save;
             Velocity = Velocity_Save;
             IsInGameMenuVisible = false;
             GameIsPaused = false;
-
-            //AttackSpeed_Save = AttackSpeed;
         }
         private void BackToMenuButton_Action(object sender, System.EventArgs e)
         {
@@ -590,7 +585,6 @@ namespace Explore_Your_Smth
                     break;
                 case Scenes.lvl_1:
                     ScenePath = "bloody One.tmx";
-                    //ScenePath = "final.tmx";
                     break;
                 case Scenes.lvl_2:
                     ScenePath = "lvl_2.tmx";
@@ -918,6 +912,7 @@ namespace Explore_Your_Smth
                 #endregion
 
                 #region map collision
+
                 foreach (var a in collisionLayer.objects)
                 {
                     var x = (int)a.x + x_offset;
@@ -933,7 +928,6 @@ namespace Explore_Your_Smth
                     if (vect.Intersects(attackCollision))
                     {
                         IsShooting = false;
-
                     }
                 }
                 #endregion
@@ -949,7 +943,10 @@ namespace Explore_Your_Smth
                     else heroPos.Y += -(int)Velocity * 2;
                     Velocity = 0;
                 }
-
+                if(noWayBack.Intersects(HeroAttackRect))
+                {
+                    IsShooting = false;
+                }
                 if ((Scenes)CurrentScene == Scenes.final)
                 {
                     var exit = FinalExit;
@@ -1164,7 +1161,6 @@ namespace Explore_Your_Smth
                                 _spriteBatch.Draw(enemysSprite, new Rectangle(x - 10, y - 4, 20, 20), new Rectangle(70, 0, 26, 20), Color.White, 0f, new Vector2(0, 0), effect, 0);
                                 break;
                         }
-                        //_spriteBatch.Draw(enemysSprite, new Rectangle(x, y + 1, 14, 14), Color.White);
                     }
                 }
 
