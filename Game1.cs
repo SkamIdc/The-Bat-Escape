@@ -16,6 +16,7 @@ namespace Explore_Your_Smth
 {
     public class Game1 : Game
     {
+        Button wtf;
         #region Sound
 
         Song MainSong;
