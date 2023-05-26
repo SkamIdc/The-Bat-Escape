@@ -6,32 +6,72 @@ using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using TiledCS;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
-using System.Collections;
 using System;
-using Microsoft.VisualBasic.ApplicationServices;
-using System.ComponentModel;
+
 
 namespace Explore_Your_Smth
 {
     public class Game1 : Game
     {
+        public GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
+
         #region Sound
 
         Song MainSong;
         SoundEffect AttackSound;
         #endregion
 
+        #region Hero
+
+        public Rectangle heroPos;
+
+        private Texture2D heroSprite;
+        private Texture2D hero_Right;
+        private Texture2D hero_Left;
+
+        private float Speed = 2;
+        private float Velocity = 0;
+        private float Velocity_Save;
+
+        int HeroFrames = 0;
+        float HeroElapsed;
+        float HeroAnimationDelay = 100f;
+
+        private bool IsHeroVisible;
+        private bool IsHorizontal;
+        private bool GameIsOver = false;
+
+        private int HeroHealth = 3;
+
+        private Texture2D HealthSprite;
+        private Texture2D Health_0;
+        private Texture2D Health_1;
+        private Texture2D Health_2;
+        private Texture2D Health_3;
+        private Texture2D Health_4;
+
+
         #region Shooting
 
-        private Texture2D HeroAttack;
         private Rectangle HeroAttackRect;
         private int AttackSpeed;
         private int AttackSpeed_Save;
         private bool AttackIsHorizontal;
         private bool IsShooting;
+
         private int AttackCount;
-        const int AttackLimit = 15;
+        readonly int AttackLimit = 15;
+
+        private Texture2D HeroAttack;
+        Texture2D HorizontalAttack;
+        Texture2D VerticalAttack;
+
+        int AttackFrames = 0;
+        float AttackElapsed;
+        float AttackAnimationDelay = 30f;
+        #endregion
+
         #endregion
 
         #region Menu Buttons
@@ -69,44 +109,36 @@ namespace Explore_Your_Smth
         #endregion
 
         #region After Death Menu
+
         List<Button> DeadMenu = new List<Button>();
-        //Button BackToMenuButton
         Button RestartButton;
 
         public bool HeroIsDead;
         #endregion
 
+        #region images (backs')
+
         private Texture2D ForestImage;
         private Texture2D ForestImage_back;
-        private Texture2D LevelBackGround;
+        private Texture2D LevelBackground;
+        private Texture2D MenuImage;
+        #endregion
+
+        #region params for final
 
         private int FinalGoal;
         private Rectangle FinalExit;
-        private int KillsCount = 7;
+        private int KillsCount = 0;
+        #endregion
 
-        private int StartLevel;
-
-        Keys[] keys;
-
+        #region Map
         const int MapWidth = 1280;
         const int MapHeight = 720;
 
-        private Button Scores;
-
         public string ScenePath;
         public int CurrentScene = 0;
-        public bool CheckPoint;
 
-        private Texture2D MenuImage;
-
-        public GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
-
-        private int AttemptionsCount;
-        private int MaxAttemptions = 3;
-
-        public Point WindowSize;
-
+        private int StartLevel;
         private TiledMap map;
         private Dictionary<int, TiledTileset> tilesets;
         private Texture2D tilesetTexture;
@@ -115,8 +147,10 @@ namespace Explore_Your_Smth
         private TiledLayer finishBox;
         private TiledLayer enemys;
         private TiledLayer hearts;
+
         private bool GameIsPaused;
         private Rectangle JustAhead;
+        #endregion
 
         #region Enemy
 
@@ -126,76 +160,13 @@ namespace Explore_Your_Smth
         float EnemyAnimationDelay = 150f;
         #endregion
 
-
+        #region extra hearts
 
         private Texture2D heartSprtie;
-
-        int AttackFrames = 0;
-        float AttackElapsed;
-        float AttackAnimationDelay = 30f;
-
-        #region Hero
-
-        public Rectangle heroPos;
-
-        private Texture2D heroSprite;
-        private Texture2D hero_Right;
-        private Texture2D hero_Left;
-
-        private float Speed = 2;
-        private float Velocity = 0;
-        private float Velocity_Save;
-
-        int HeroFrames = 0;
-        float HeroElapsed;
-        float HeroAnimationDelay = 100f;
-
-        private bool IsHeroVisible;
-        private bool IsHorizontal;
-        private bool GameIsOver = false;
-
-        private int HeroHealth = 3;
-        private bool HealthIsZero = false;
-
-        private Texture2D HealthSprite;
-        private Texture2D Health_0;
-        private Texture2D Health_1;
-        private Texture2D Health_2;
-        private Texture2D Health_3;
-        private Texture2D Health_4;
         #endregion
-
-        Texture2D HorizontalAttack;
-        Texture2D VerticalAttack;
-
-        // private Rectangle? debugRect;
-        //const int scaleFactor = 3;
 
         private int WindowWidth = 1920;
         private int WindowHeight = 1080;
-
-
-        enum Scenes{
-            menu,
-            lvl_1,
-            lvl_2,
-            lvl_3,
-            lvl_4,
-            lvl_5,
-            lvl_6,
-            lvl_7,
-            final,
-            victory
-        }
-        public List<int> CompletedLevels = new List<int>();
-
-
-        private void MediaPlayer_MediaStateChanged(object sender, System.EventArgs e)
-        {
-            MediaPlayer.Volume -= 0.1f;
-            MediaPlayer.Play(MainSong);
-        }
-
 
         public Game1()
         {
@@ -204,20 +175,14 @@ namespace Explore_Your_Smth
             IsMouseVisible = true;
             Window.AllowUserResizing = true;
             //Window.IsBorderless = true;
-            Window.Title = "idk what im doing";
+            Window.Title = "The Bat Escape";
         }
 
-
-        private void Window_KeyDown(object sender, InputKeyEventArgs e)
-        {
-            Exit();
-        }
 
         protected override void Initialize()
         {
-            WindowSize = new(MapWidth, MapHeight);
-            _graphics.PreferredBackBufferWidth = WindowSize.X;
-            _graphics.PreferredBackBufferHeight = WindowSize.Y;
+            _graphics.PreferredBackBufferWidth = MapWidth;
+            _graphics.PreferredBackBufferHeight = MapHeight;
             _graphics.ApplyChanges();
 
             base.Initialize();
@@ -227,6 +192,9 @@ namespace Explore_Your_Smth
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             LoadScene((Scenes)CurrentScene);
+
+            heartSprtie = Content.Load<Texture2D>("extra_heart");
+            enemysSprite = Content.Load<Texture2D>("enemy flying");
 
             #region Background music
 
@@ -240,26 +208,15 @@ namespace Explore_Your_Smth
             #region SoundEffects
 
             AttackSound = Content.Load<SoundEffect>("AttackSoundMP3");
-            // или
-            //MediaPlayer.MediaStateChanged += MediaPlayer_MediaStateChanged;
             #endregion
 
+            #region BackGrounds
 
-            LevelBackGround = Content.Load<Texture2D>("dark red back fog2");
+            LevelBackground = Content.Load<Texture2D>("dark red back fog2");
             MenuImage = Content.Load<Texture2D>("MainMenuImage");
             ForestImage = Content.Load<Texture2D>("DarkForest");
             ForestImage_back = Content.Load<Texture2D>("DarkForest_back");
-
-            heartSprtie = Content.Load<Texture2D>("extra_heart");
-            enemysSprite = Content.Load<Texture2D>("enemy flying");
-
-            Scores = new Button(
-                    Content.Load<SpriteFont>("Peace Sans"),
-                    //"Очки",
-                    "Scores",
-                    Content.Load<Texture2D>("tile1"),
-                    100, 50,
-                    0, 0) ;
+            #endregion
 
             #region Hero Health 
 
@@ -331,7 +288,8 @@ namespace Explore_Your_Smth
                 "Settings",
                 Content.Load<Texture2D>("tile1"),
                 300, 50,
-                0, 0) { IsReact = false };
+                0, 0)
+            { IsReact = false };
 
             PlusSpeedButton.Click += PlusSpeedButton_Action;
             MinusSpeedButton.Click += MinusSpeedButton_Action;
@@ -365,14 +323,15 @@ namespace Explore_Your_Smth
                 "SongVolume",
                 Content.Load<Texture2D>("tile1"),
                 300, 50,
-                0, volume_yOffset) { IsReact = false };
+                0, volume_yOffset)
+            { IsReact = false };
 
 
             MinusSongVolumeButton.Click += MinusSongVolumeButton_Action;
             PlusSongVolumeButton.Click += PlusSongVolumeButton_Action;
 
             MenuButtons.Add(PlusSongVolumeButton);
-            MenuButtons.Add(MinusSongVolumeButton); 
+            MenuButtons.Add(MinusSongVolumeButton);
             MenuButtons.Add(ShowSongVolumeButton);
 
 
@@ -402,7 +361,8 @@ namespace Explore_Your_Smth
                 "SongVolume",
                 Content.Load<Texture2D>("tile1"),
                 300, 50,
-                0, soundEffects_yOffset){ IsReact = false };
+                0, soundEffects_yOffset)
+            { IsReact = false };
 
 
             MinusSoundEffButton.Click += MinusSoundEffButton_Action;
@@ -441,7 +401,8 @@ namespace Explore_Your_Smth
                 "StartLevel",
                 Content.Load<Texture2D>("tile1"),
                 300, 50,
-                0, startLevelBar_offset){ IsReact = false };
+                0, startLevelBar_offset)
+            { IsReact = false };
 
 
             PlusStartLevelButton.Click += PlusStartLevelButton_Action;
@@ -492,7 +453,7 @@ namespace Explore_Your_Smth
 
             RestartButton = new Button(
                 Content.Load<SpriteFont>("Peace Sans"),
-                //"Начать с начала (1ый уровень)",
+                //"Начать с начала",
                 "Restart Game",
                 Content.Load<Texture2D>("tile1"),
                 300, 50,
@@ -585,7 +546,7 @@ namespace Explore_Your_Smth
         #region InGame Buttuons Reaction
 
         private void ContinueButton_Action(object sender, System.EventArgs e)
-        { 
+        {
 
             AttackSpeed = AttackSpeed_Save;
             Velocity = Velocity_Save;
@@ -668,7 +629,6 @@ namespace Explore_Your_Smth
 
             map = new TiledMap("Content\\" + ScenePath);
             tilesets = map.GetTiledTilesets("Content\\tilesets/");
-            tilesetTexture = Content.Load<Texture2D>("Crimson_tileset");
             IsShooting = false;
             if (CurrentScene != 0)
             {
@@ -695,15 +655,15 @@ namespace Explore_Your_Smth
         private void SetStartPosition()
         {
             var startPoint = start.objects[0];
-            heroPos = new Rectangle((int)startPoint.x + (WindowWidth - MapWidth) / 2, (int)startPoint.y + (WindowHeight - MapHeight) / 2 , 20, 20);
+            heroPos = new Rectangle((int)startPoint.x + (WindowWidth - MapWidth) / 2, (int)startPoint.y + (WindowHeight - MapHeight) / 2, 20, 20);
 
-            //heroPos = new Rectangle((int)enemys.objects[0].x - 200 + (WindowWidth - 960) / 2, (int)enemys.objects[0].y + (WindowHeight - 640) / 2, 10, 10);
             Velocity = 0;
             AttackCount = 0;
         }
+
         private void Reset()
         {
-            if ( StartLevel != 0 || CurrentScene == 1 || CurrentScene == 5 )
+            if (StartLevel != 0 || CurrentScene == 1 || CurrentScene == 5)
             {
                 HeroHealth = 3;
                 for (var i = 0; i < hearts.objects.Length; i++)
@@ -720,12 +680,6 @@ namespace Explore_Your_Smth
             SetStartPosition();
         }
 
-        private void TurnHero()
-        {
-            var width = heroPos.Width;
-            heroPos.Width = heroPos.Height;
-            heroPos.Height = width;
-        }
 
         protected override void Update(GameTime gameTime)
         {
@@ -739,7 +693,7 @@ namespace Explore_Your_Smth
             if (CurrentScene == 0) IsMenuVisible = true;
             else IsMenuVisible = false;
 
-            if(CurrentScene == 0)
+            if (CurrentScene == 0)
             {
                 #region Menu Buttons Text
 
@@ -808,7 +762,7 @@ namespace Explore_Your_Smth
 
             if (!IsShooting && AttackCount < AttackLimit && Keyboard.GetState().IsKeyDown(Keys.Space) && !GameIsOver && !GameIsPaused)
             {
-                AttackCount+=1;
+                AttackCount += 1;
                 AttackSound.Play();
                 IsShooting = true;
                 HeroAttackRect = new Rectangle(heroPos.X, heroPos.Y, 20, 20);
@@ -841,7 +795,8 @@ namespace Explore_Your_Smth
             {
                 if (CurrentScene == 0)
                     Exit();
-                else {
+                else
+                {
                     GameIsPaused = true;
                     IsInGameMenuVisible = true;
                     Velocity_Save = Velocity;
@@ -878,7 +833,7 @@ namespace Explore_Your_Smth
             WindowWidth = _graphics.PreferredBackBufferWidth;
 
 
-            if(CurrentScene != 0)
+            if (CurrentScene != 0)
             {
                 var x_offset = (_graphics.PreferredBackBufferWidth - MapWidth) / 2;
                 var y_offset = (_graphics.PreferredBackBufferHeight - MapHeight) / 2;
@@ -892,7 +847,7 @@ namespace Explore_Your_Smth
                     var vect = new Rectangle(x, y, (int)a.width, (int)a.height);
                     if (vect.Intersects(heroPos))
                     {
-                        if(StartLevel == 0)
+                        if (StartLevel == 0)
                             CurrentScene = (CurrentScene + 1) % 10;
                         else
                             CurrentScene = 0;
@@ -919,7 +874,7 @@ namespace Explore_Your_Smth
                             enemys.objects[i].name = "dead";
                             IsShooting = false;
                             HeroAttackRect = new Rectangle(0, 0, 0, 0);
-                            if((Scenes)CurrentScene == Scenes.final) KillsCount += 1;
+                            if ((Scenes)CurrentScene == Scenes.final) KillsCount += 1;
                         }
 
                         if (vect.Intersects(heroPos) && enemys.objects[i].name != "dead")
@@ -995,15 +950,15 @@ namespace Explore_Your_Smth
                     Velocity = 0;
                 }
 
-                if((Scenes)CurrentScene == Scenes.final)
+                if ((Scenes)CurrentScene == Scenes.final)
                 {
                     var exit = FinalExit;
                     exit.X += x_offset;
                     exit.Y += y_offset;
                     if (exit.Intersects(heroPos) && KillsCount != FinalGoal)
-                    {                            
-                        GameIsOver = true;                            
-                        Velocity = 0;                            
+                    {
+                        GameIsOver = true;
+                        Velocity = 0;
                         if (HeroHealth - 1 == 0)
                             HeroIsDead = true;
                     }
@@ -1026,7 +981,7 @@ namespace Explore_Your_Smth
 
                 var animationDelay = HeroAnimationDelay / (Speed) + 50;
                 HeroElapsed += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-                if(HeroElapsed >= animationDelay)
+                if (HeroElapsed >= animationDelay)
                 {
                     HeroFrames = (HeroFrames + 1) % 4;
                     HeroElapsed = 0;
@@ -1037,27 +992,23 @@ namespace Explore_Your_Smth
 
                 if ((ks.IsKeyDown(Keys.D) || ks.IsKeyDown(Keys.Right)) && !IsHorizontal)
                 {
-                    TurnHero();
                     heroSprite = hero_Right;
                     Velocity = Speed;
                     IsHorizontal = true;
                 }
                 if ((ks.IsKeyDown(Keys.A) || ks.IsKeyDown(Keys.Left)) && !IsHorizontal)
                 {
-                    TurnHero();
                     heroSprite = hero_Left;
                     Velocity = -Speed;
                     IsHorizontal = true;
                 }
                 if ((ks.IsKeyDown(Keys.S) || ks.IsKeyDown(Keys.Down)) && IsHorizontal)
                 {
-                    TurnHero();
                     Velocity = Speed;
                     IsHorizontal = false;
                 }
                 if ((ks.IsKeyDown(Keys.W) || ks.IsKeyDown(Keys.Up)) && IsHorizontal)
                 {
-                    TurnHero();
                     Velocity = -Speed;
                     IsHorizontal = false;
                 }
@@ -1121,7 +1072,7 @@ namespace Explore_Your_Smth
                 var y_change = (_graphics.PreferredBackBufferHeight - MapHeight) / 2;
 
                 if (CurrentScene != 9)
-                    _spriteBatch.Draw(LevelBackGround, new Rectangle(0, 0, WindowWidth, WindowHeight), Color.White);
+                    _spriteBatch.Draw(LevelBackground, new Rectangle(0, 0, WindowWidth, WindowHeight), Color.White);
                 else
                 {
                     _spriteBatch.Draw(ForestImage_back, new Rectangle(0, 0, WindowWidth, WindowHeight), Color.White);
@@ -1157,7 +1108,7 @@ namespace Explore_Your_Smth
                             var textureName = mapTileset.source;
                             var a = textureName.Split('.');
                             var b = a[0];
-                            tilesetTexture = Content.Load<Texture2D>("tilesets_png\\" + b);
+                            tilesetTexture = Content.Load<Texture2D>(b);
                             SpriteEffects effects = SpriteEffects.None;
                             double rotation = 0f;
 
@@ -1178,7 +1129,7 @@ namespace Explore_Your_Smth
 
             #region Enemys and Extra Health
 
-            if(CurrentScene != 0)
+            if (CurrentScene != 0)
             {
                 var x_offset = (_graphics.PreferredBackBufferWidth - MapWidth) / 2;
                 var y_offset = (_graphics.PreferredBackBufferHeight - MapHeight) / 2;
@@ -1278,7 +1229,7 @@ namespace Explore_Your_Smth
                 _spriteBatch.Draw(
                     HealthSprite,
                     new Rectangle(
-                        x,y, 
+                        x, y,
                         HealthSprite.Width, HealthSprite.Height),
                     Color.White);
             }
@@ -1289,19 +1240,14 @@ namespace Explore_Your_Smth
             if (IsMenuVisible)
                 foreach (var button in MenuButtons)
                     button.Draw(_spriteBatch);
-                    //button.Draw(gameTime, _spriteBatch);
 
             if (IsInGameMenuVisible)
                 foreach (var button in InGameButtons)
                     button.Draw(_spriteBatch);
-                    //button.Draw(gameTime, _spriteBatch);
 
             if (HeroIsDead)
                 foreach (var button in DeadMenu)
                     button.Draw(_spriteBatch);
-                    //button.Draw(gameTime, _spriteBatch);
-
-            //Scores.Draw(_spriteBatch);
 
             #endregion
 
