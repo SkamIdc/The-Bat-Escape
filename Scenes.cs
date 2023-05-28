@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Explore_Your_Smth
 {
-    enum Scenes
+    public enum Scenes
     {
         menu,
         lvl_1,

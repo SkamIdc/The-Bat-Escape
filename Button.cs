@@ -14,6 +14,7 @@ namespace Explore_Your_Smth
     public class Button
     {
         #region Button Parameters
+
         private int X_Offset;
         private int Y_Offset;
         private int Width;
@@ -23,24 +24,24 @@ namespace Explore_Your_Smth
         private Texture2D Sprite;
 
         #region Mouse Info
+
         private MouseState MouseInfo;
         private MouseState PreviousMouseInfo;
         private bool _isHovering;
-        public bool IsReact { get; set; }
+        public bool IsReact;
 
-        //public bool Clicked { get; private set; }
         public event EventHandler Click;
         #endregion
 
-        public Rectangle Rectangle { get; set; }
+        public Rectangle Rectangle;
         private Vector2 Position;
 
         #region OnButton Text
+
         public Color PenColour { get; set; }
         private SpriteFont Font;
         public string Text { get; set; }
         #endregion
-
 
         public Button(SpriteFont font, string text, Texture2D texture, int width, int height, int xOffset, int yOffset)
         {
@@ -55,7 +56,6 @@ namespace Explore_Your_Smth
             PenColour = Color.White;
         }
 
-        //public void Draw(GameTime gameTime, SpriteBatch spriteBatch
         public void Draw(SpriteBatch spriteBatch)
         {
             var color = Color.DarkMagenta;
@@ -63,12 +63,13 @@ namespace Explore_Your_Smth
                 color = Color.Black;
             spriteBatch.Draw(Sprite, Rectangle, color);
             var penColor = Color.White;
+        
             if (!string.IsNullOrEmpty(Text))
             {
                 var x = (Rectangle.X + (Rectangle.Width / 2 )) - (Font.MeasureString(Text).X / 2);
                 var y = (Rectangle.Y + (Rectangle.Height / 2)) - (Font.MeasureString(Text).Y / 2);
 
-                spriteBatch.DrawString(Font, Text, new Vector2(x, y), penColor);//, 0f, new Vector2(0, 0), 1f, SpriteEffects.None, 1f);
+                spriteBatch.DrawString(Font, Text, new Vector2(x, y), penColor);
             }
         }
 
@@ -92,6 +93,5 @@ namespace Explore_Your_Smth
                     Click?.Invoke(this, new EventArgs());
             }
         }
-
     }
 }
