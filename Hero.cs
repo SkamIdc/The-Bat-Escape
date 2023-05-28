@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using TiledCS;
 using System.Linq;
 using System;
-using SharpDX.MediaFoundation;
 
 
 namespace Explore_Your_Smth
@@ -190,7 +189,11 @@ namespace Explore_Your_Smth
 
         private void Move(GameTime gameTime)
         {
-            ChangePosition();
+            var ks = Keyboard.GetState();
+            if (LastDirection == Direction.left || LastDirection == Direction.right)
+                Position.X += (int)Velocity;
+            else
+                Position.Y += (int)Velocity;
 
             if (!Crashed && !Game1.IsInGameMenuVisible && !Game1.ShowStoryText)
             {
@@ -205,60 +208,33 @@ namespace Explore_Your_Smth
                 }
                 #endregion
 
+                #region Movement
 
-                ReactPressedKeys(GetDirection(Keyboard.GetState()));
-            }
-        }
+                if ((ks.IsKeyDown(Keys.D) || ks.IsKeyDown(Keys.Right)) && (LastDirection != Direction.left || LastDirection == Direction.stay))
+                {
+                    Sprite = Sprite_Right;
+                    Velocity = Speed;
+                    LastDirection = Direction.right;
+                }
+                if ((ks.IsKeyDown(Keys.A) || ks.IsKeyDown(Keys.Left)) && (LastDirection != Direction.right || LastDirection == Direction.stay))
+                {
+                    Sprite = Sprite_Left;
+                    Velocity = -Speed;
+                    LastDirection = Direction.left;
+                }
+                if ((ks.IsKeyDown(Keys.S) || ks.IsKeyDown(Keys.Down)) && (LastDirection != Direction.up || LastDirection == Direction.stay))
+                {
+                    Velocity = Speed;
+                    LastDirection = Direction.down;
+                }
+                if ((ks.IsKeyDown(Keys.W) || ks.IsKeyDown(Keys.Up)) && (LastDirection != Direction.down || LastDirection == Direction.stay))
+                {
+                    Velocity = -Speed;
+                    LastDirection = Direction.up;
+                }
+                #endregion
 
-        public void ChangePosition()
-        {
-            if (LastDirection == Direction.left || LastDirection == Direction.right)
-                Position.X += (int)Velocity;
-            else
-                Position.Y += (int)Velocity;
-        }
-
-        public void ReactPressedKeys(Direction dir)
-        {
-            #region Movement
-
-            if (dir == Direction.right)
-            {
-                Sprite = Sprite_Right;
-                Velocity = Speed;
-                LastDirection = Direction.right;
             }
-            if (dir == Direction.left)
-            {
-                Sprite = Sprite_Left;
-                Velocity = -Speed;
-                LastDirection = Direction.left;
-            }
-            if (dir == Direction.down)
-            {
-                Velocity = Speed;
-                LastDirection = Direction.down;
-            }
-            if (dir == Direction.up)
-            {
-                Velocity = -Speed;
-                LastDirection = Direction.up;
-            }
-            #endregion
-        }
-
-        private Direction GetDirection(KeyboardState ks)
-        {
-            if ((ks.IsKeyDown(Keys.D) || ks.IsKeyDown(Keys.Right)) && (LastDirection != Direction.left || LastDirection == Direction.stay))
-                return Direction.right;
-            if ((ks.IsKeyDown(Keys.A) || ks.IsKeyDown(Keys.Left)) && (LastDirection != Direction.right || LastDirection == Direction.stay))
-                return Direction.left;
-            if ((ks.IsKeyDown(Keys.S) || ks.IsKeyDown(Keys.Down)) && (LastDirection != Direction.up || LastDirection == Direction.stay))
-                return Direction.down;
-            if ((ks.IsKeyDown(Keys.W) || ks.IsKeyDown(Keys.Up)) && (LastDirection != Direction.down || LastDirection == Direction.stay))
-                return Direction.up;
-            else
-                return Direction.stay;
         }
 
         private void CheckCollision(GraphicsDeviceManager _graphics)
@@ -284,9 +260,32 @@ namespace Explore_Your_Smth
             }
             #endregion
 
-            #region enemies
-            Do(x_offset, y_offset);
+            #region enemys
 
+            for (var i = 0; i < Enemies.PositionsLayer.objects.Length; i++)
+            {
+                if (Enemies.PositionsLayer.objects[i].name != "dead")
+                {
+                    var e = Enemies.PositionsLayer.objects[i];
+                    var x = (int)e.x + x_offset;
+                    var y = (int)e.y + y_offset;
+                    var vect = new Rectangle(x, y + 1, 14, 14);
+                    if (vect.Intersects(AttackRect) || AttackRect.Intersects(vect))
+                    {
+                        Enemies.PositionsLayer.objects[i].name = "dead";
+                        IsShooting = false;
+                        AttackRect = new Rectangle(0, 0, 0, 0);
+                        if ((Scenes)Game1.CurrentScene == Scenes.final) KillsCount += 1;
+                    }
+                    if (vect.Intersects(Position) && Enemies.PositionsLayer.objects[i].name != "dead")
+                    {
+                        this.Crashed = true;
+                        Velocity = 0;
+                        if (Health - 1 == 0)
+                            IsDead = true;
+                    }
+                }
+            }
             #endregion
 
             #region extra hearts
@@ -370,34 +369,6 @@ namespace Explore_Your_Smth
                 }
             }
             #endregion
-        }
-
-        public void Do(int x_offset, int y_offset)
-        {
-            for (var i = 0; i < Enemies.PositionsLayer.objects.Length; i++)
-            {
-                if (Enemies.PositionsLayer.objects[i].name != "dead")
-                {
-                    var e = Enemies.PositionsLayer.objects[i];
-                    var x = (int)e.x + x_offset;
-                    var y = (int)e.y + y_offset;
-                    var vect = new Rectangle(x, y + 1, 14, 14);
-                    if (vect.Intersects(AttackRect) || AttackRect.Intersects(vect))
-                    {
-                        Enemies.PositionsLayer.objects[i].name = "dead";
-                        IsShooting = false;
-                        AttackRect = new Rectangle(0, 0, 0, 0);
-                        if ((Scenes)Game1.CurrentScene == Scenes.final) KillsCount += 1;
-                    }
-                    if (vect.Intersects(Position) && Enemies.PositionsLayer.objects[i].name != "dead")
-                    {
-                        Crashed = true;
-                        Velocity = 0;
-                        if (Health - 1 == 0)
-                            IsDead = true;
-                    }
-                }
-            }
         }
 
         public void Draw(SpriteBatch _spriteBatch, GraphicsDeviceManager _graphics, GameTime gameTime)
