@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="80" height="45" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="6">
+ <tileset firstgid="1" source="dark green.tsx"/>
+ <objectgroup id="2" name="start">
+  <object id="4" x="592" y="640"/>
+  <object id="5" x="0" y="672" width="1280"/>
+ </objectgroup>
+ <objectgroup id="3" name="finish">
+  <object id="1" x="0" y="0" width="1280"/>
+  <object id="2" x="1280" y="0" height="672"/>
+  <object id="3" x="0" y="0" height="672"/>
+ </objectgroup>
+ <objectgroup id="4" name="collision"/>
+ <objectgroup id="5" name="enemys"/>
+ <objectgroup id="6" name="hearts"/>
+</map>

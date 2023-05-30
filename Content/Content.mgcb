@@ -13,42 +13,6 @@
 
 #---------------------------------- Content ---------------------------------#
 
-#begin ../../progProj/map4game/bloody One.tmx
-/copy:../../progProj/map4game/bloody One.tmx;bloody One.tmx
-
-#begin ../../progProj/map4game/final.tmx
-/copy:../../progProj/map4game/final.tmx;final.tmx
-
-#begin ../../progProj/map4game/lvl_1_bw.tmx
-/copy:../../progProj/map4game/lvl_1_bw.tmx;lvl_1_bw.tmx
-
-#begin ../../progProj/map4game/lvl_2.tmx
-/copy:../../progProj/map4game/lvl_2.tmx;lvl_2.tmx
-
-#begin ../../progProj/map4game/lvl_3.tmx
-/copy:../../progProj/map4game/lvl_3.tmx;lvl_3.tmx
-
-#begin ../../progProj/map4game/lvl_4.tmx
-/copy:../../progProj/map4game/lvl_4.tmx;lvl_4.tmx
-
-#begin ../../progProj/map4game/lvl_5.tmx
-/copy:../../progProj/map4game/lvl_5.tmx;lvl_5.tmx
-
-#begin ../../progProj/map4game/lvl_6.tmx
-/copy:../../progProj/map4game/lvl_6.tmx;lvl_6.tmx
-
-#begin ../../progProj/map4game/lvl_7.tmx
-/copy:../../progProj/map4game/lvl_7.tmx;lvl_7.tmx
-
-#begin ../../progProj/map4game/menu.tmx
-/copy:../../progProj/map4game/menu.tmx;menu.tmx
-
-#begin ../../progProj/map4game/newgame.tmx
-/copy:../../progProj/map4game/newgame.tmx;newgame.tmx
-
-#begin ../../progProj/map4game/victory.tmx
-/copy:../../progProj/map4game/victory.tmx;victory.tmx
-
 #begin 0_hearts.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -202,6 +166,9 @@
 /processorParam:TextureFormat=Color
 /build:Beehive_environment_tileset.png
 
+#begin bloody One.tmx
+/copy:bloody One.tmx
+
 #begin Cave_environment_tileset.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -352,6 +319,9 @@
 /processorParam:TextureFormat=Color
 /build:extra_heart.png
 
+#begin final.tmx
+/copy:final.tmx
+
 #begin Forest_environment_tileset.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -427,6 +397,27 @@
 /processorParam:Quality=Best
 /build:IEROD1903678-inner-peace-1903678-320.mp3
 
+#begin lvl_1_bw.tmx
+/copy:lvl_1_bw.tmx
+
+#begin lvl_2.tmx
+/copy:lvl_2.tmx
+
+#begin lvl_3.tmx
+/copy:lvl_3.tmx
+
+#begin lvl_4.tmx
+/copy:lvl_4.tmx
+
+#begin lvl_5.tmx
+/copy:lvl_5.tmx
+
+#begin lvl_6.tmx
+/copy:lvl_6.tmx
+
+#begin lvl_7.tmx
+/copy:lvl_7.tmx
+
 #begin MainMenuImage.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -438,6 +429,9 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:MainMenuImage.png
+
+#begin menu.tmx
+/copy:menu.tmx
 
 #begin Monster_environment_tileset.png
 /importer:TextureImporter
@@ -465,6 +459,9 @@
 
 #begin monster.tsx
 /copy:monster.tsx
+
+#begin newgame.tmx
+/copy:newgame.tmx
 
 #begin orange.png
 /importer:TextureImporter
@@ -556,6 +553,9 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:tile1.png
+
+#begin victory.tmx
+/copy:victory.tmx
 
 #begin WallCollapsed.mp3
 /importer:Mp3Importer
